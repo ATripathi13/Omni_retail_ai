@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omni-Retail AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar glass-panel">
+            <div class="logo">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>OmniOrchestrator</span>
+            </div>
+
+            <div class="agents-status">
+                <h3>Active Agents</h3>
+                <div class="agent-item">
+                    <span class="status-dot online"></span>
+                    <span class="agent-name">ShopCore</span>
+                    <span class="agent-role">Products & Orders</span>
+                </div>
+                <div class="agent-item">
+                    <span class="status-dot online"></span>
+                    <span class="agent-name">ShipStream</span>
+                    <span class="agent-role">Logistics</span>
+                </div>
+                <div class="agent-item">
+                    <span class="status-dot online"></span>
+                    <span class="agent-name">PayGuard</span>
+                    <span class="agent-role">FinTech</span>
+                </div>
+                <div class="agent-item">
+                    <span class="status-dot online"></span>
+                    <span class="agent-name">CareDesk</span>
+                    <span class="agent-role">Support</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="glass-panel header">
+                <h2>AI Assistance</h2>
+                <span class="status-badge">System Operational</span>
+            </header>
+
+            <div id="chat-history" class="chat-history">
+                <!-- Messages will appear here -->
+                <div class="system-message">
+                    <div class="message-content glass-panel">
+                        <p>Welcome to Omni-Retail AI. I can help you find orders, check shipments, verify wallets, and
+                            manage support tickets across all our systems. How can I help you today?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area glass-panel">
+                <form id="chat-form">
+                    <input type="text" id="user-input"
+                        placeholder="Ask a complex query (e.g., 'Find order #123 status and refund if lost')..."
+                        required autocomplete="off">
+                    <button type="submit" class="send-btn">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Templates for JS to use -->
+    <template id="user-msg-template">
+        <div class="user-message fade-in">
+            <div class="message-content glass-panel"></div>
+        </div>
+    </template>
+
+    <template id="ai-msg-template">
+        <div class="ai-message fade-in">
+            <div class="message-content glass-panel">
+                <div class="plan-section">
+                    <h4><i class="fa-solid fa-list-check"></i> Execution Plan</h4>
+                    <ul class="steps-list"></ul>
+                </div>
+                <div class="results-section">
+                    <h4><i class="fa-solid fa-database"></i> Results</h4>
+                    <div class="json-output"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="/static/js/app.js"></script>
+</body>
+
+</html>

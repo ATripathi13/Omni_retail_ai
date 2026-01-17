@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from app.orchestrator.orchestrator import Orchestrator
 from app.core.logger import log
@@ -12,6 +14,14 @@ app = FastAPI(
     description="API Gateway for Multi-Agent Retail System",
     version="1.0.0"
 )
+
+# Mount Static Files
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+# Root Endpoint -> Serve Frontend
+@app.get("/")
+async def read_root():
+    return FileResponse('app/static/index.html')
 
 # Initialize Orchestrator (Singleton-ish for this demo)
 orchestrator = Orchestrator()
