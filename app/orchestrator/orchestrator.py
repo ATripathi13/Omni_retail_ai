@@ -131,14 +131,45 @@ User Query: "{user_query}"
                 
         return results
 
+    def summarize_results(self, user_query, results):
+        """
+        Synthesizes a natural language response from the execution results.
+        """
+        prompt = f"""
+You are the Voice of the Omni-Retail AI. 
+User Query: "{user_query}"
+
+Execution Results:
+{json.dumps(results, indent=2, default=str)}
+
+Goal: Provide a concise, helpful natural language answer to the user's query based strictly on the results above.
+- If data was found, summarize it clearly (e.g., "I found 2 orders. The first one is...").
+- If errors occurred, mention them politely.
+- Do not mention internal step IDs or "JSON" in the final output.
+- Be professional and direct.
+"""
+        try:
+            response = self.model.generate_content(prompt)
+            return response.text.strip()
+        except Exception as e:
+            log.error(f"Summarization Error: {e}")
+            return "I completed the steps, but couldn't generate a summary. Please check the results below."
+
     def run(self, user_query):
         log.info(f"User Query: {user_query}")
         plan = self.plan_task(user_query)
         if not plan:
             log.error("Failed to generate a plan.")
-            return
+            return {"error": "Failed to generate a plan."}
         
         log.info("Generated Plan:")
         log.info(json.dumps(plan, indent=2))
         
-        return self.execute_plan(plan)
+        results = self.execute_plan(plan)
+        summary = self.summarize_results(user_query, results)
+        
+        return {
+            "plan": plan,
+            "results": results,
+            "summary": summary
+        }

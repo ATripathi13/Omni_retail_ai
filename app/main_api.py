@@ -59,16 +59,18 @@ def health_check():
 def chat(request: ChatRequest):
     try:
         log.info(f"Received query: {request.query}")
-        plan = orchestrator.plan_task(request.query)
-        if not plan:
-            log.error("Failed to generate a plan")
-            raise HTTPException(status_code=500, detail="Failed to generate a plan.")
+        # Orchestrator.run now returns specific dict keys: plan, results, summary
+        response_data = orchestrator.run(request.query)
         
-        results = orchestrator.execute_plan(plan)
+        if not response_data or "error" in response_data:
+            log.error("Failed to process query")
+            raise HTTPException(status_code=500, detail="Failed to process query.")
+        
         return {
             "query": request.query,
-            "plan": plan,
-            "results": results
+            "plan": response_data["plan"],
+            "results": response_data["results"],
+            "summary": response_data["summary"]
         }
     except Exception as e:
         log.error(f"Chat Endpoint Error: {str(e)}")

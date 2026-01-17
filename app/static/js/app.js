@@ -51,6 +51,17 @@ function appendAIMessage(data) {
     const clone = aiTemplate.content.cloneNode(true);
     const container = clone.querySelector('.message-content');
 
+    // Render Natural Language Summary
+    if (data.summary) {
+        const summaryDiv = document.createElement('div');
+        summaryDiv.className = 'ai-summary';
+        summaryDiv.style.marginBottom = '16px';
+        summaryDiv.style.fontSize = '1.05rem';
+        summaryDiv.innerHTML = `<p>${data.summary.replace(/\n/g, '<br>')}</p>`;
+        // Insert at the top
+        container.insertBefore(summaryDiv, container.firstChild);
+    }
+
     // Render Plan
     const stepsList = container.querySelector('.steps-list');
     if (data.plan && data.plan.length > 0) {
