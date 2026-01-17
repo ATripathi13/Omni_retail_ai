@@ -8,3 +8,5 @@ venv/
 .env
 .DS_Store
 *.db
+.temp_env/
+.dockerignore
