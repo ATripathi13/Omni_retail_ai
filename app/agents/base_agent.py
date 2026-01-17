@@ -4,6 +4,7 @@ import re
 import json
 from sqlalchemy import text
 from dotenv import load_dotenv
+from app.core.logger import log
 
 load_dotenv()
 
@@ -15,7 +16,7 @@ class BaseAgent:
         self.api_key = os.getenv("GOOGLE_API_KEY")
         
         if not self.api_key:
-             print("WARNING: GOOGLE_API_KEY not found in environment variables.")
+             log.warning("WARNING: GOOGLE_API_KEY not found in environment variables.")
         else:
              genai.configure(api_key=self.api_key)
              self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
@@ -73,7 +74,7 @@ User Query: "{user_query}"
             if not is_valid:
                 return {"error": f"SQL Safety Violation: {validation_msg}"}
 
-            print(f"[{self.agent_name}] Executing SQL: {sql_query}")
+            log.info(f"[{self.agent_name}] Executing SQL: {sql_query}")
             
             with self.engine.connect() as connection:
                 result = connection.execute(text(sql_query))
@@ -81,8 +82,8 @@ User Query: "{user_query}"
                 return {"data": rows, "sql": sql_query}
 
         except Exception as e:
-            print(f"DEBUG: Detailed error: {e}")
-            print("FALLBACK: Attempting regex-based SQL generation.")
+            log.debug(f"DEBUG: Detailed error: {e}")
+            log.info("FALLBACK: Attempting regex-based SQL generation.")
             
             # Simple Regex Fallbacks for Demo
             q = user_query.lower()
@@ -114,7 +115,7 @@ User Query: "{user_query}"
                sql_query = "SELECT * FROM tickets WHERE status='open' LIMIT 5"
                
             if sql_query:
-                print(f"[{self.agent_name}] Fallback SQL: {sql_query}")
+                log.info(f"[{self.agent_name}] Fallback SQL: {sql_query}")
                 with self.engine.connect() as connection:
                     result = connection.execute(text(sql_query))
                     rows = [dict(row._mapping) for row in result]

@@ -7,6 +7,7 @@ from app.agents.ship_stream import ShipStreamAgent
 from app.agents.pay_guard import PayGuardAgent
 from app.agents.care_desk import CareDeskAgent
 from dotenv import load_dotenv
+from app.core.logger import log
 
 load_dotenv()
 
@@ -14,7 +15,7 @@ class Orchestrator:
     def __init__(self):
         self.api_key = os.getenv("GOOGLE_API_KEY")
         if not self.api_key:
-             print("WARNING: GOOGLE_API_KEY not found.")
+             log.warning("GOOGLE_API_KEY not found.")
         genai.configure(api_key=self.api_key)
         self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
         
@@ -64,8 +65,8 @@ User Query: "{user_query}"
             plan_text = re.sub(r"```\s*$", "", plan_text)
             return json.loads(plan_text)
         except Exception as e:
-            print(f"Planning Error: {e}")
-            print("FALLBACK: generating hardcoded plan for demo.")
+            log.error(f"Planning Error: {e}")
+            log.warning("FALLBACK: generating hardcoded plan for demo.")
             # Fallback plan for the default query
             return [
                 {
@@ -92,13 +93,13 @@ User Query: "{user_query}"
         context = {}
         results = []
         
-        print(f"\n--- Executing Plan ({len(plan)} steps) ---")
+        log.info(f"--- Executing Plan ({len(plan)} steps) ---")
         for step in plan:
             step_id = step['id']
             agent_name = step['agent']
             query = step['query']
             
-            print(f"Step {step_id} [{agent_name}]: {query}")
+            log.info(f"Step {step_id} [{agent_name}]: {query}")
             
             # Enrich query with previous context if needed
             if context:
@@ -106,7 +107,7 @@ User Query: "{user_query}"
             
             agent = self.agents.get(agent_name)
             if not agent:
-                print(f"Error: Unknown agent {agent_name}")
+                log.error(f"Error: Unknown agent {agent_name}")
                 continue
                 
             result = agent.process_query(query)
@@ -121,23 +122,23 @@ User Query: "{user_query}"
             
             # Simple print of result
             if "error" in result:
-                print(f"  -> Error: {result['error']}")
+                log.error(f"  -> Error: {result['error']}")
             elif "data" in result:
                 data = result["data"]
-                print(f"  -> Found {len(data)} records.")
+                log.info(f"  -> Found {len(data)} records.")
             else:
-                print(f"  -> {result}")
+                log.info(f"  -> {result}")
                 
         return results
 
     def run(self, user_query):
-        print(f"User Query: {user_query}")
+        log.info(f"User Query: {user_query}")
         plan = self.plan_task(user_query)
         if not plan:
-            print("Failed to generate a plan.")
+            log.error("Failed to generate a plan.")
             return
         
-        print("Generated Plan:")
-        print(json.dumps(plan, indent=2))
+        log.info("Generated Plan:")
+        log.info(json.dumps(plan, indent=2))
         
         return self.execute_plan(plan)
