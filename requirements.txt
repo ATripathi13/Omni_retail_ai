@@ -1,2 +1,4 @@
 sqlalchemy
 faker
+google-generativeai
+python-dotenv
