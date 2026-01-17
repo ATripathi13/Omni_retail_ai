@@ -43,11 +43,15 @@ GOOGLE_API_KEY=your_google_api_key_here
 ```
 
 ### 3. Run with Docker (Recommended)
-Build and run the application container:
+Build and run the application container. The system is configured for **zero-touch initialization**:
 
 ```bash
 docker-compose up --build
 ```
+This single command handles the entire lifecycle automatically:
+1.  **Seeds the Database**: Checks availability and populates dummy data if missing.
+2.  **Generates Schemas**: Creates SQL schema files in the `schemas/` directory.
+3.  **Starts the API**: Launches the FastAPI server.
 
 The application will be available at:
 - **Web UI**: [http://localhost:8000](http://localhost:8000)
@@ -63,6 +67,9 @@ source myenv/bin/activate  # On Windows: myenv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
+
+# Manually Seed Data (if needed)
+python -m app.seeders.seed_data
 
 # Run the application
 uvicorn app.main_api:app --host 0.0.0.0 --port 8000 --reload
@@ -97,5 +104,3 @@ Response:
   "summary": "Your order #101 is delivered. The refund of $50 has been processed successfully."
 }
 ```
-
-
